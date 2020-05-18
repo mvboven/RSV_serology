@@ -426,6 +426,34 @@ plt.tight_layout()
 plt.savefig(path_figures + 'scatter_RSV_proteins_IgG_days.svg')
 plt.show()   
 
+
+# %% Figure scatter plot antibody concentration IgG (y) vs age (days) (x), colored by IgA
+# Figure did not end up in the manuscript
+#fig2 = plt.figure(dpi=300, figsize=(16,8))
+
+fig, axes = plt.subplots(nrows=1, ncols=3, sharey=True, figsize=(18,6))
+
+RSV_proteins = ['PreF', 'PostF', 'N']
+position_list = [0,1,2]
+for inx, i in enumerate(RSV_proteins):
+   #ax = plt.subplot(2, 3, position_list[inx])
+    axes[inx].set_title(i)
+    im = axes[inx].scatter(np.array(df_IgAandG['age_days']), np.array(df_IgAandG['IgG_' + i]), \
+                c=np.array(df_IgAandG['IgA_' + i]), marker="1", norm=mpl.colors.LogNorm())
+    axes[inx].set_yscale('log')   
+    axes[inx].set_xlabel('Age (days)')
+    axes[inx].set_ylim(10**-2, 10**4)
+axes[0].set_ylabel('AU/ml (IgG)')
+
+fig.subplots_adjust(right=0.8)
+cbar_ax = fig.add_axes([0.35, -0.05, 0.35, 0.05])
+
+cbar = plt.colorbar(im, orientation="horizontal", cax=cbar_ax)
+cbar.ax.set_xlabel('IgA AU/ml')
+
+plt.tight_layout()
+plt.savefig(path_figures + 'scatter_pre_post_N_IgG_days.svg', bbox_inches='tight')
+plt.show()   
 # %% Figure scatter plot antibody concentration IgG (y) vs age (days) (x), colored by IgA for PostF
 
 plt.figure(dpi=300, figsize=(10,6))
@@ -625,6 +653,124 @@ for k, v in IgA.items():
         else:
             df_infection.loc[index_count].infection = 0
         index_count += 1
+
+# %% 2x3 Scatter plot only the proteins we use for the infected/non-infected classification
+
+
+IgG_colouring = []
+for index, row in df_IgG.iterrows():
+    #if row['age_days'] > 500:
+    if row['ID'] in list(df_infection['ID']):
+        if int(df_infection['infection'].loc[df_infection['ID'] == row['ID']]) == 1:
+            IgG_colouring.append('C1')
+        if int(df_infection['infection'].loc[df_infection['ID'] == row['ID']]) == 0:
+            IgG_colouring.append('C0')   
+    else:
+        IgG_colouring.append('darkgrey')
+df_IgG['IgG_colouring'] = IgG_colouring 
+  
+IgA_colouring = []
+for index, row in df_IgAandG.iterrows():
+    #print(row['ID'])
+    #if row['age_days'] <= 500:
+        
+    if int(df_infection['infection'].loc[df_infection['ID'] == row['ID']]) == 1:
+        IgA_colouring.append('C1')
+    if int(df_infection['infection'].loc[df_infection['ID'] == row['ID']]) == 0:
+        IgA_colouring.append('C0')   
+    #else:
+     #   IgA_colouring.append('C7')
+df_IgAandG['IgA_colouring'] = IgA_colouring 
+
+
+    
+titles_RSV = ['PreF','PostF','N']
+plt.figure(dpi=300, figsize=(16,8))
+for index, i in enumerate(titles_RSV):
+    ax1 = plt.subplot(2,3,index+1)
+    ax1.set_yscale('log')
+    
+    #Histogram on the side
+    divider = make_axes_locatable(ax1)
+    ax1Histy = divider.append_axes("right", size=0.6, pad=0.1, sharey=ax1)
+    
+    logbins = np.logspace(-2, 4, num=31)
+    ax1Histy.hist(df_IgG['IgG_' + i].loc[df_IgG['IgG_colouring'] == 'C0']\
+                 .loc[df_IgG['age_days'] > 500], stacked=True\
+                 , bins = logbins, orientation='horizontal', color = 'C0')
+    ax1Histy.hist(df_IgG['IgG_' + i].loc[df_IgG['IgG_colouring'] == 'C1']\
+                 .loc[df_IgG['age_days'] > 500], stacked=True\
+                 , bins = logbins, orientation='horizontal', color = 'C1')
+    ax1Histy.tick_params(axis="y", labelleft=False)
+
+    ax1Histy.set_xticks(np.arange(0,51, step = 25))
+    
+    
+    ax1.scatter(df_IgG['age_days'], df_IgG['IgG_' + i],\
+                        color = df_IgG['IgG_colouring'] ,marker="1", alpha = 0.8)
+
+    
+    ax1.set_title(i)
+    if index < 3:
+        ax1.vlines(500,10**-2,10**4,linestyles='dotted',colors='r')
+        ax1.hlines(10**0,500,max(df_IgG['age_days']),linestyles='dashed',colors='black') #IgG infected cut off
+        ax1.text(1500,10**0.1,'1.0')
+        ax1.set_ylim(10**-2,10**4)
+    
+    ax2 = plt.subplot(2,3,index+4)
+    #make y hist
+    divider = make_axes_locatable(ax2)
+    ax2Histy = divider.append_axes("right", size=0.6, pad=0.1, sharey=ax2)
+    
+    logbins2 = np.logspace(-3, 3, num=31)
+    ax2Histy.hist(df_IgAandG['IgA_' + i].loc[df_IgAandG['IgA_colouring'] == 'C0']\
+                 .loc[df_IgAandG['age_days'] <= 500], stacked=True\
+                 , bins = logbins2, orientation='horizontal', color = 'C0')
+    ax2Histy.hist(df_IgAandG['IgA_' + i].loc[df_IgAandG['IgA_colouring'] == 'C1']\
+                 .loc[df_IgAandG['age_days'] <= 500], stacked=True\
+                 , bins = logbins2, orientation='horizontal', color = 'C1')
+    ax2Histy.tick_params(axis="y", labelleft=False)
+    ax2Histy.set_xlabel('Counts')
+    
+    # the scatter plot
+    ax2.scatter(df_IgAandG['age_days'], df_IgAandG['IgA_' + i],\
+                        color = df_IgAandG['IgA_colouring'] ,marker="1", alpha = 0.8)
+    
+    if index < 3:
+        ax2.hlines(0.2,min(df_IgAandG['age_days']),500,linestyles='dashed',colors='black') #IgG infected cut off
+        ax2.text(400,.25,'0.2')
+        ax2.vlines(500,10**-3,10**3,linestyles='dotted',colors='r')
+        ax2.set_ylim(10**-3,10**3)
+    else:
+        ax2.set_ylim(10**-3,10**2)
+    
+    ax1.grid(True, which='major')
+    ax2.grid(True, which='major')
+    
+    ax1Histy.grid(True, which='major')
+    ax2Histy.grid(True, which='major')
+    
+    ax2.set_yscale('log')
+    if index in [1,2]:
+        ax1.yaxis.set_ticklabels([])
+        ax2.yaxis.set_ticklabels([])
+        ax2Histy.set_xticks(np.arange(0,151, step = 75))
+        
+    ax1.xaxis.set_ticklabels([])
+    ax2.set_xlabel('Age (days)')
+    
+    if index == 0:
+        ax1.set_ylabel('AU/ml (IgG)')
+        ax2.set_ylabel('AU/ml (IgA)')
+        ax2Histy.set_xticks(np.arange(0,251, step = 125))
+    
+    
+
+plt.tight_layout(pad=0.1)    
+plt.savefig(path_figures + 'scatter_RSV_for_classification_withcolors_days2x3.svg')
+plt.show()
+
+
 # %% added additional variables to infection dataframe (maybe want to undo this)
 df_infection['age_group'] = pd.Series(['none' for x in \
                                        range(len(df_infection['age_months']))]\
