@@ -413,7 +413,7 @@ for inx, i in enumerate(RSV_proteins):
     ax = plt.subplot(2, 3, position_list[inx])
     plt.title(i)
     plt.scatter(np.array(df_IgAandG['age_days']), np.array(df_IgAandG['IgG_' + i]), \
-                c=np.array(df_IgAandG['IgA_' + i]), marker="1", norm=mpl.colors.LogNorm())
+                c=np.array(df_IgAandG['IgA_' + i]), marker="1", norm=mpl.colors.LogNorm(), cmap="magma")
     plt.yscale('log')   
     plt.ylabel('AU/ml (IgG)')
     cbar = plt.colorbar()
@@ -439,7 +439,7 @@ for inx, i in enumerate(RSV_proteins):
    #ax = plt.subplot(2, 3, position_list[inx])
     axes[inx].set_title(i)
     im = axes[inx].scatter(np.array(df_IgAandG['age_days']), np.array(df_IgAandG['IgG_' + i]), \
-                c=np.array(df_IgAandG['IgA_' + i]), marker="1", norm=mpl.colors.LogNorm())
+                c=np.array(df_IgAandG['IgA_' + i]), marker="1", norm=mpl.colors.LogNorm(), cmap="magma")
     axes[inx].set_yscale('log')   
     axes[inx].set_xlabel('Age (days)')
     axes[inx].set_ylim(10**-2, 10**4)
