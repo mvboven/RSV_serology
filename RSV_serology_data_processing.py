@@ -416,6 +416,7 @@ for inx, i in enumerate(RSV_proteins):
                 c=np.array(df_IgAandG['IgA_' + i]), marker="1", norm=mpl.colors.LogNorm(), cmap="magma")
     plt.yscale('log')   
     plt.ylabel('AU/ml (IgG)')
+    plt.grid(True, which='major')
     cbar = plt.colorbar()
     cbar.set_label('IgA_'+ i)
     if inx == 0 or inx == 3:
@@ -443,6 +444,7 @@ for inx, i in enumerate(RSV_proteins):
     axes[inx].set_yscale('log')   
     axes[inx].set_xlabel('Age (days)')
     axes[inx].set_ylim(10**-2, 10**4)
+    axes[inx].grid(True, which='major')
 axes[0].set_ylabel('AU/ml (IgG)')
 
 fig.subplots_adjust(right=0.8)
@@ -459,12 +461,13 @@ plt.show()
 plt.figure(dpi=300, figsize=(10,6))
 plt.title('PostF')
 plt.scatter(np.array(df_IgAandG['age_days']), np.array(df_IgAandG['IgG_PostF']), \
-                c=np.array(df_IgAandG['IgA_' + 'PostF']), marker="1", norm=mpl.colors.LogNorm())
+                c=np.array(df_IgAandG['IgA_' + 'PostF']), marker="1", norm=mpl.colors.LogNorm(),cmap="magma")
 plt.yscale('log')   
 plt.ylabel('AU/ml (IgG)')
 cbar = plt.colorbar()
 cbar.set_label('IgA_'+ 'PostF')
 plt.xlabel('Age (days)')
+plt.grid(True, which='major')
 plt.savefig(path_figures + 'scatter_PostF_IgG_days_all_ages.svg')
 plt.show()   
 
