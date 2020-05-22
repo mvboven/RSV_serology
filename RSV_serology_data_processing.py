@@ -575,7 +575,8 @@ plt.show()
 # %% produce dataframe with infection classification
 max_months = 61	   #we are intrested in indivduals below 5 years
 cut_off_days_IgG = 500
-
+cut_off_IgA = 0.2
+cut_off_IgG = 1.0
 index = range(len([(k) for k in IgG.keys() if time_dict[k]['age_months'] \
                    < max_months\
                   and time_dict[k]['age_days'] > cut_off_days_IgG]) \
@@ -609,7 +610,7 @@ for k, v in IgG.items():
                 df_infection.loc[index_count].pregnancytime = \
                     additional_variables[k]['pregnancytime']
         
-        true_count = sum(1 for item in RSV_selection if v[item] > 1.0)
+        true_count = sum(1 for item in RSV_selection if v[item] > cut_off_IgG)
         if true_count > 1: # 2 or 3 above cutoff
             df_infection.loc[index_count].infection = 1
         else:
@@ -650,7 +651,7 @@ for k, v in IgA.items():
                 df_infection.loc[index_count].pregnancytime = \
                     additional_variables[k]['pregnancytime']
                 
-        true_count = sum(1 for item in RSV_selection if IgA[k][item] > 0.2)#0.06683439)
+        true_count = sum(1 for item in RSV_selection if IgA[k][item] > cut_off_IgA)#0.06683439)
         if true_count > 1: # 2 or 3 above cutoff
             df_infection.loc[index_count].infection = 1
         else:
@@ -699,10 +700,10 @@ for index, i in enumerate(titles_RSV):
     
     logbins = np.logspace(-2, 4, num=31)
     ax1Histy.hist(df_IgG['IgG_' + i].loc[df_IgG['IgG_colouring'] == 'C0']\
-                 .loc[df_IgG['age_days'] > 500], stacked=True\
+                 .loc[df_IgG['age_days'] > cut_off_days_IgG], stacked=True\
                  , bins = logbins, orientation='horizontal', color = 'C0')
     ax1Histy.hist(df_IgG['IgG_' + i].loc[df_IgG['IgG_colouring'] == 'C1']\
-                 .loc[df_IgG['age_days'] > 500], stacked=True\
+                 .loc[df_IgG['age_days'] > cut_off_days_IgG], stacked=True\
                  , bins = logbins, orientation='horizontal', color = 'C1')
     ax1Histy.tick_params(axis="y", labelleft=False)
 
@@ -715,8 +716,8 @@ for index, i in enumerate(titles_RSV):
     
     ax1.set_title(i)
     if index < 3:
-        ax1.vlines(500,10**-2,10**4,linestyles='dotted',colors='r')
-        ax1.hlines(10**0,500,max(df_IgG['age_days']),linestyles='dashed',colors='black') #IgG infected cut off
+        ax1.vlines(cut_off_days_IgG,10**-2,10**4,linestyles='dotted',colors='r')
+        ax1.hlines(cut_off_IgG,cut_off_days_IgG,max(df_IgG['age_days']),linestyles='dashed',colors='black') #IgG infected cut off
         ax1.text(1500,10**0.1,'1.0')
         ax1.set_ylim(10**-2,10**4)
     
@@ -727,10 +728,10 @@ for index, i in enumerate(titles_RSV):
     
     logbins2 = np.logspace(-3, 3, num=31)
     ax2Histy.hist(df_IgAandG['IgA_' + i].loc[df_IgAandG['IgA_colouring'] == 'C0']\
-                 .loc[df_IgAandG['age_days'] <= 500], stacked=True\
+                 .loc[df_IgAandG['age_days'] <= cut_off_days_IgG], stacked=True\
                  , bins = logbins2, orientation='horizontal', color = 'C0')
     ax2Histy.hist(df_IgAandG['IgA_' + i].loc[df_IgAandG['IgA_colouring'] == 'C1']\
-                 .loc[df_IgAandG['age_days'] <= 500], stacked=True\
+                 .loc[df_IgAandG['age_days'] <= cut_off_days_IgG], stacked=True\
                  , bins = logbins2, orientation='horizontal', color = 'C1')
     ax2Histy.tick_params(axis="y", labelleft=False)
     ax2Histy.set_xlabel('Counts')
@@ -740,9 +741,9 @@ for index, i in enumerate(titles_RSV):
                         color = df_IgAandG['IgA_colouring'] ,marker="1", alpha = 0.8)
     
     if index < 3:
-        ax2.hlines(0.2,min(df_IgAandG['age_days']),500,linestyles='dashed',colors='black') #IgG infected cut off
+        ax2.hlines(cut_off_IgA,min(df_IgAandG['age_days']),cut_off_days_IgG,linestyles='dashed',colors='black') #IgG infected cut off
         ax2.text(400,.25,'0.2')
-        ax2.vlines(500,10**-3,10**3,linestyles='dotted',colors='r')
+        ax2.vlines(cut_off_days_IgG,10**-3,10**3,linestyles='dotted',colors='r')
         ax2.set_ylim(10**-3,10**3)
     else:
         ax2.set_ylim(10**-3,10**2)
