@@ -24,7 +24,7 @@ PIENTER2 = 'p2voorrsvanalyses.sas7bdat'    			#File name PIENTER2
 PIENTER3 = 'p3voorrsvanalyses.sas7bdat'				#File name PIENTER3
 
 # Set figure save path
-path_figures = '/data/BioGrid/andewegs/1_figures/python_main_figures/'
+path_figures = '/home/andewegs/RSV_serology/figures/'
 
 # %% import PIENTER2 and PIENTER 3
 '''
@@ -49,7 +49,7 @@ df_PIENTER3.at[df_PIENTER3['id_patient'] == 67425, 'RSV_IgA_postF'] = np.NaN
 df_PIENTER3.at[df_PIENTER3['id_patient'] == 67425, 'RSV_IgA_PreF_NIH'] = np.NaN
 df_PIENTER3.at[df_PIENTER3['id_patient'] == 67425, 'RSV_IgA_N'] = np.NaN
 
-#print(list(df_PIENTER2))   #print all variables
+print(list(df_PIENTER2))   #print all variables
 #print(list(df_PIENTER3))
 
 '''
@@ -343,7 +343,7 @@ plt.xlabel('Age bins (months)')	# make x-axis label
 plt.ylabel('Counts')				# make y-axis label
 
 # vertical line at age = 500 days
-plt.vlines((500/30.44),0,100,linestyles='dotted',colors='r')
+#plt.vlines((500/30.44),0,100,linestyles='dotted',colors='r')
 plt.ylim(0,95)                  # set y limits
 
 plt.savefig(path_figures + 'histogram_age_months_distr.svg', \
@@ -415,7 +415,7 @@ for inx, i in enumerate(RSV_proteins):
     plt.scatter(np.array(df_IgAandG['age_days']), np.array(df_IgAandG['IgG_' + i]), \
                 c=np.array(df_IgAandG['IgA_' + i]), marker="1", norm=mpl.colors.LogNorm(), cmap="magma")
     plt.yscale('log')   
-    plt.ylabel('AU/ml (IgG)')
+    plt.ylabel('AU/mL (IgG)')
     plt.grid(True, which='major')
     cbar = plt.colorbar()
     cbar.set_label('IgA_'+ i)
@@ -429,29 +429,33 @@ plt.show()
 
 
 # %% Figure scatter plot antibody concentration IgG (y) vs age (days) (x), colored by IgA
-# Figure did not end up in the manuscript
+# Figure did  end up in the manuscript
 #fig2 = plt.figure(dpi=300, figsize=(16,8))
 
 fig, axes = plt.subplots(nrows=1, ncols=3, sharey=True, figsize=(18,6))
 
 RSV_proteins = ['PreF', 'PostF', 'N']
-position_list = [0,1,2]
+real_names = ['Prefusion F', 'Postfusion F', 'N']
+
 for inx, i in enumerate(RSV_proteins):
    #ax = plt.subplot(2, 3, position_list[inx])
-    axes[inx].set_title(i)
+    axes[inx].set_title(real_names[inx], size = 20)
     im = axes[inx].scatter(np.array(df_IgAandG['age_days']), np.array(df_IgAandG['IgG_' + i]), \
-                c=np.array(df_IgAandG['IgA_' + i]), marker="1", norm=mpl.colors.LogNorm(), cmap="magma")
+                c=np.array(df_IgAandG['IgA_' + i]), marker="1", \
+                    norm=mpl.colors.LogNorm(), cmap="magma", s = 50)
     axes[inx].set_yscale('log')   
-    axes[inx].set_xlabel('Age (days)')
+    axes[inx].set_xlabel('Age (days)', size = 20)
     axes[inx].set_ylim(10**-2, 10**4)
+    axes[inx].tick_params(labelsize=15)
     axes[inx].grid(True, which='major')
-axes[0].set_ylabel('AU/ml (IgG)')
+axes[0].set_ylabel('AU/mL (IgG)', size = 20)
 
 fig.subplots_adjust(right=0.8)
 cbar_ax = fig.add_axes([0.35, -0.05, 0.35, 0.05])
 
 cbar = plt.colorbar(im, orientation="horizontal", cax=cbar_ax)
-cbar.ax.set_xlabel('IgA AU/ml')
+cbar.ax.set_xlabel('IgA AU/mL', size = 20)
+cbar.ax.tick_params(labelsize=15) 
 
 plt.tight_layout()
 plt.savefig(path_figures + 'scatter_pre_post_N_IgG_days.svg', bbox_inches='tight')
@@ -459,11 +463,11 @@ plt.show()
 # %% Figure scatter plot antibody concentration IgG (y) vs age (days) (x), colored by IgA for PostF
 
 plt.figure(dpi=300, figsize=(10,6))
-plt.title('PostF')
+plt.title('postfusion F')
 plt.scatter(np.array(df_IgAandG['age_days']), np.array(df_IgAandG['IgG_PostF']), \
                 c=np.array(df_IgAandG['IgA_' + 'PostF']), marker="1", norm=mpl.colors.LogNorm(),cmap="magma")
 plt.yscale('log')   
-plt.ylabel('AU/ml (IgG)')
+plt.ylabel('AU/mL (IgG)')
 cbar = plt.colorbar()
 cbar.set_label('IgA_'+ 'PostF')
 plt.xlabel('Age (days)')
@@ -687,7 +691,7 @@ for index, row in df_IgAandG.iterrows():
 df_IgAandG['IgA_colouring'] = IgA_colouring 
 
 
-    
+real_names = ['Prefusion F', 'Postfusion F', 'N']
 titles_RSV = ['PreF','PostF','N']
 plt.figure(dpi=300, figsize=(16,8))
 for index, i in enumerate(titles_RSV):
@@ -711,10 +715,11 @@ for index, i in enumerate(titles_RSV):
     
     
     ax1.scatter(df_IgG['age_days'], df_IgG['IgG_' + i],\
-                        color = df_IgG['IgG_colouring'] ,marker="1", alpha = 0.8)
+                        color = df_IgG['IgG_colouring'] ,marker="1", alpha = 0.8\
+                            , s = 50)
 
     
-    ax1.set_title(i)
+    ax1.set_title(real_names[index], size = 15)
     if index < 3:
         ax1.vlines(cut_off_days_IgG,10**-2,10**4,linestyles='dotted',colors='r')
         ax1.hlines(cut_off_IgG,cut_off_days_IgG,max(df_IgG['age_days']),linestyles='dashed',colors='black') #IgG infected cut off
@@ -734,11 +739,12 @@ for index, i in enumerate(titles_RSV):
                  .loc[df_IgAandG['age_days'] <= cut_off_days_IgG], stacked=True\
                  , bins = logbins2, orientation='horizontal', color = 'C1')
     ax2Histy.tick_params(axis="y", labelleft=False)
-    ax2Histy.set_xlabel('Counts')
+    ax2Histy.set_xlabel('Counts', size = 15)
     
     # the scatter plot
     ax2.scatter(df_IgAandG['age_days'], df_IgAandG['IgA_' + i],\
-                        color = df_IgAandG['IgA_colouring'] ,marker="1", alpha = 0.8)
+                        color = df_IgAandG['IgA_colouring'] ,marker="1", alpha = 0.8\
+                            , s = 50)
     
     if index < 3:
         ax2.hlines(cut_off_IgA,min(df_IgAandG['age_days']),cut_off_days_IgG,linestyles='dashed',colors='black') #IgG infected cut off
@@ -761,11 +767,11 @@ for index, i in enumerate(titles_RSV):
         ax2Histy.set_xticks(np.arange(0,151, step = 75))
         
     ax1.xaxis.set_ticklabels([])
-    ax2.set_xlabel('Age (days)')
+    ax2.set_xlabel('Age (days)', size = 15)
     
     if index == 0:
-        ax1.set_ylabel('AU/ml (IgG)')
-        ax2.set_ylabel('AU/ml (IgA)')
+        ax1.set_ylabel('AU/ml (IgG)', size = 15)
+        ax2.set_ylabel('AU/ml (IgA)', size = 15)
         ax2Histy.set_xticks(np.arange(0,251, step = 125))
     
     
@@ -847,8 +853,8 @@ for i in range(60):
     total_ind = 0
     for index, row in df_infection.iterrows():
         if round(row['age_months']) == i:
-            infected_ind += row['infection']
-            total_ind += 1
+            infected_ind += row['infection']    #add 0 or 1 
+            total_ind += 1                      #always add 1
     if infected_ind == 0 and total_ind > 0:
         fraction_infectd_list.append(0)
     elif infected_ind == 0 and total_ind == 0:
@@ -856,37 +862,6 @@ for i in range(60):
     else:
         fraction_infectd_list.append((infected_ind/total_ind))
     number_ind_list.append(total_ind)
-    #Pienter2
-    infected_ind = 0
-    total_ind = 0
-    for index, row in df_infection.loc[df_infection["ID"].str.startswith('P2')].iterrows():
-        if round(row['age_months']) == i:
-            infected_ind += row['infection']
-            total_ind += 1
-    if infected_ind == 0 and total_ind > 0:
-        fraction_infectd_P2.append(0)
-    elif infected_ind == 0 and total_ind == 0:
-        fraction_infectd_P2.append(1.0)
-    else:
-        fraction_infectd_P2.append((infected_ind/total_ind))
-    number_ind_P2.append(total_ind)
-    #Pienter3
-    infected_ind = 0
-    total_ind = 0
-    for index, row in df_infection.loc[df_infection["ID"].str.startswith('P3')].iterrows():
-        if round(row['age_months']) == i:
-            infected_ind += row['infection']
-            total_ind += 1
-    if infected_ind == 0 and total_ind > 0:
-        fraction_infectd_P3.append(0)
-    elif infected_ind == 0 and total_ind == 0:
-        fraction_infectd_P3.append(1.0)
-    else:
-        fraction_infectd_P3.append((infected_ind/total_ind))
-    number_ind_P3.append(total_ind)
-
-number_ind = number_ind_list
-fraction_infected = fraction_infectd_list
 
 left, width = 0.1, 1.2
 bottom, height = 0.1, 0.6
@@ -896,19 +871,19 @@ rect_histx = [left, bottom + height + spacing, width, 0.2]
 
 plt.figure(dpi=300)
 
-ind = np.arange(1, len(fraction_infected)+1)
+ind = np.arange(1, len(fraction_infectd_list)+1)
 width_bars = 0.9
 ax_bar = plt.axes(rect_bar)  
 ax_histx = plt.axes(rect_histx)  
 
-ax_bar.bar(ind, np.ones(len(fraction_infected)), width_bars, color='C0', label='seronegative')
-ax_bar.bar(ind, fraction_infected, width_bars, color='C1', label='seropositive')
-ax_bar.set_xticks(np.arange(0, len(fraction_infected)+2, 5))
+ax_bar.bar(ind, np.ones(len(fraction_infectd_list)), width_bars, color='C0', label='uninfected')
+ax_bar.bar(ind, fraction_infectd_list, width_bars, color='C1', label='infected')
+ax_bar.set_xticks(np.arange(0, len(fraction_infectd_list)+2, 5))
 ax_bar.legend(loc='upper right', fontsize=7)
 ax_bar.set_xlabel('Age (months)')
 ax_bar.set_ylabel('Proportion')
 
-ax_histx.bar(ind, number_ind, width_bars, color='green')
+ax_histx.bar(ind, number_ind_list, width_bars, color='green')
 ax_histx.set_xticklabels([])
 ax_histx.set_ylabel('Counts')
 ax_histx.set_yticks(np.arange(0,60,10))
@@ -1112,7 +1087,7 @@ ax_lexisP3.yaxis.grid(True, which='major')
 
 custom_lines = [Line2D([0], [0], color='C0', lw=0.7),
                 Line2D([0], [0], color='C1', lw=0.7)]
-ax_lexisP2.legend(custom_lines, ['seronegative', 'seropositive'])
+ax_lexisP2.legend(custom_lines, ['uninfected', 'infected'])
 
 #ax_lexisP2.set_title(RSV_protein)
 fig.savefig(path_figures + 'Lexis_diagram_infected_1years'\
@@ -1270,9 +1245,128 @@ ax_lexisP3.yaxis.grid(True, which='major')
 
 custom_lines = [Line2D([0], [0], color='C0', lw=0.7),
                 Line2D([0], [0], color='C1', lw=0.7)]
-ax_lexisP2.legend(custom_lines, ['seronegative', 'seropositive'])
+ax_lexisP2.legend(custom_lines, ['uninfected', 'infected'])
 
 
 fig.savefig(path_figures + 'Lexis_diagram_infected_5years'\
             '.svg', format='svg', bbox_inches='tight')
 plt.show()
+
+#numbers in the text
+
+#number of samples IgG, age < 61 months
+len(df_IgG)
+#Number of samples IgG and IgA
+len(df_IgAandG)
+# number of samples with an infection status
+len(df_infection)
+# Average fold increase for all proteins
+# IgA preF
+
+IgA_clasified = df_infection.loc[df_infection['age_days'] <= 500]
+IgG_clasified = df_infection.loc[df_infection['age_days'] > 500]
+
+selection = df_infection.loc[df_infection['age_days'] > 365]\
+    .loc[df_infection['age_days'] < 730]
+
+#preF IgA
+av_preF_IgA_pos = np.sum(selection.loc[selection['infection'] == 1]['IgA_PreF']) \
+    /len(selection.loc[selection['infection'] == 1])
+av_preF_IgA_neg = np.sum(selection.loc[selection['infection'] == 0]['IgA_PreF']) \
+    /len(selection.loc[selection['infection'] == 0])
+av_preF_IgA_pos/av_preF_IgA_neg
+
+#preF IgA
+av_postF_IgA_pos = np.sum(selection.loc[selection['infection'] == 1]['IgA_PostF']) \
+    /len(selection.loc[selection['infection'] == 1])
+av_postF_IgA_neg = np.sum(selection.loc[selection['infection'] == 0]['IgA_PostF']) \
+    /len(selection.loc[selection['infection'] == 0])
+av_postF_IgA_pos/av_postF_IgA_neg
+
+#N IgA
+av_N_IgA_pos = np.sum(selection.loc[selection['infection'] == 1]['IgA_N']) \
+    /len(selection.loc[selection['infection'] == 1])
+av_N_IgA_neg = np.sum(selection.loc[selection['infection'] == 0]['IgA_N']) \
+    /len(selection.loc[selection['infection'] == 0])
+av_N_IgA_pos/av_N_IgA_neg
+
+#preF IgG
+av_preF_IgG_pos = np.sum(selection.loc[selection['infection'] == 1]['IgG_PreF']) \
+    /len(selection.loc[selection['infection'] == 1])
+av_preF_IgG_neg = np.sum(selection.loc[selection['infection'] == 0]['IgG_PreF']) \
+    /len(selection.loc[selection['infection'] == 0])
+av_preF_IgG_pos/av_preF_IgG_neg
+
+#preF IgG
+av_postF_IgG_pos = np.sum(selection.loc[selection['infection'] == 1]['IgG_PostF']) \
+    /len(selection.loc[selection['infection'] == 1])
+av_postF_IgG_neg = np.sum(selection.loc[selection['infection'] == 0]['IgG_PostF']) \
+    /len(selection.loc[selection['infection'] == 0])
+av_postF_IgG_pos/av_postF_IgG_neg
+
+#N IgG
+av_N_IgG_pos = np.sum(selection.loc[selection['infection'] == 1]['IgG_N']) \
+    /len(selection.loc[selection['infection'] == 1])
+av_N_IgG_neg = np.sum(selection.loc[selection['infection'] == 0]['IgG_N']) \
+    /len(selection.loc[selection['infection'] == 0])
+av_N_IgG_pos/av_N_IgG_neg
+
+
+
+#preF IgA
+av_preF_IgA_pos = np.sum(df_infection.loc[df_infection['infection'] == 1]['IgA_PreF']) \
+    /len(df_infection.loc[df_infection['infection'] == 1])
+av_preF_IgA_neg = np.sum(df_infection.loc[df_infection['infection'] == 0]['IgA_PreF']) \
+    /len(df_infection.loc[df_infection['infection'] == 0])
+av_preF_IgA_pos/av_preF_IgA_neg
+
+#preF IgA
+av_postF_IgA_pos = np.sum(df_infection.loc[df_infection['infection'] == 1]['IgA_PostF']) \
+    /len(df_infection.loc[df_infection['infection'] == 1])
+av_postF_IgA_neg = np.sum(df_infection.loc[df_infection['infection'] == 0]['IgA_PostF']) \
+    /len(df_infection.loc[df_infection['infection'] == 0])
+av_postF_IgA_pos/av_postF_IgA_neg
+
+#N IgA
+av_N_IgA_pos = np.sum(df_infection.loc[df_infection['infection'] == 1]['IgA_N']) \
+    /len(df_infection.loc[df_infection['infection'] == 1])
+av_N_IgA_neg = np.sum(df_infection.loc[df_infection['infection'] == 0]['IgA_N']) \
+    /len(df_infection.loc[df_infection['infection'] == 0])
+av_N_IgA_pos/av_N_IgA_neg
+
+#preF IgG
+av_preF_IgG_pos = np.sum(IgG_clasified.loc[IgG_clasified['infection'] == 1]['IgG_PreF']) \
+    /len(IgG_clasified.loc[IgG_clasified['infection'] == 1])
+av_preF_IgG_neg = np.sum(IgG_clasified.loc[IgG_clasified['infection'] == 0]['IgG_PreF']) \
+    /len(IgG_clasified.loc[IgG_clasified['infection'] == 0])
+av_preF_IgG_pos/av_preF_IgG_neg
+
+#preF IgG
+av_postF_IgG_pos = np.sum(IgG_clasified.loc[IgG_clasified['infection'] == 1]['IgG_PostF']) \
+    /len(IgG_clasified.loc[IgG_clasified['infection'] == 1])
+av_postF_IgG_neg = np.sum(IgG_clasified.loc[IgG_clasified['infection'] == 0]['IgG_PostF']) \
+    /len(IgG_clasified.loc[IgG_clasified['infection'] == 0])
+av_postF_IgG_pos/av_postF_IgG_neg
+
+#N IgG
+av_N_IgG_pos = np.sum(IgG_clasified.loc[IgG_clasified['infection'] == 1]['IgG_N']) \
+    /len(IgG_clasified.loc[IgG_clasified['infection'] == 1])
+av_N_IgG_neg = np.sum(IgG_clasified.loc[IgG_clasified['infection'] == 0]['IgG_N']) \
+    /len(IgG_clasified.loc[IgG_clasified['infection'] == 0])
+av_N_IgG_pos/av_N_IgG_neg
+
+cp2 = 0
+cp3 = 0
+for i in df_IgG['ID']:
+    if i.startswith('P2'):
+        cp2 += 1
+    if i.startswith('P3'):
+        cp3 += 1
+
+young_inf = len(df_infection.loc[df_infection['age_days'] < 500].loc[df_infection['infection'] == 1])
+young_total = len(df_infection.loc[df_infection['age_days'] < 500])
+old_inf = len(df_infection.loc[df_infection['age_days'] > 500].loc[df_infection['infection'] == 1])
+old_total = len(df_infection.loc[df_infection['age_days'] > 500])
+young_inf / young_total
+old_inf / old_total
+        
