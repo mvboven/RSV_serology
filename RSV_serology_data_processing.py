@@ -49,7 +49,7 @@ df_PIENTER3.at[df_PIENTER3['id_patient'] == 67425, 'RSV_IgA_postF'] = np.NaN
 df_PIENTER3.at[df_PIENTER3['id_patient'] == 67425, 'RSV_IgA_PreF_NIH'] = np.NaN
 df_PIENTER3.at[df_PIENTER3['id_patient'] == 67425, 'RSV_IgA_N'] = np.NaN
 
-print(list(df_PIENTER2))   #print all variables
+#print(list(df_PIENTER2))   #print all variables
 #print(list(df_PIENTER3))
 
 '''
@@ -833,14 +833,19 @@ for index, row in df_infection.iterrows():
         if 'pregnancytime' in additional_variables[row['ID']].keys():
             df_infection.at[index, 'pregnancytime'] = \
                 additional_variables[row['ID']]['pregnancytime']
-
+        if 'breastfeeding' in additional_variables[row['ID']].keys():
+            df_infection.at[index, 'breastfeeding'] = \
+                additional_variables[row['ID']]['breastfeeding']
 
 #risk factors to csv
-header = ['ID', 'age_days', 'birthday', 'consultdate', 'infection',\
-        'n_household', 'household04','household03','household02', 'household59'\
+header = ['age_days', 'birthday', 'consultdate', 'infection',\
+          'IgG_PreF', 'IgA_PreF', 'IgG_PostF', 'IgA_PostF', \
+       'IgG_Ga', 'IgA_Ga', 'IgG_Gb', 'IgA_Gb', 'IgG_N', 'IgA_N' \
+        'n_household', 'household04','household59'\
             ,'visitnursery_child',\
-        'visitnursery_house','pregnancytime', 'contacttotal', 'contact04', 'contact59', 'sex']
-df_infection.to_csv('/home/andewegs/1_RSV_scripts/tensor_splines/data/Riskfactors2_csv.txt'\
+        'visitnursery_house','pregnancytime', 'contacttotal', 'contact04', \
+            'contact59', 'sex']
+df_infection.to_csv('/home/andewegs/RSV_serology/data/rsv_serology_csv.txt'\
                     , columns=header,index=False)
 
 # %% Figure barplot fraction infected over age in months
