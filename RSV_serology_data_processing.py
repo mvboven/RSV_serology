@@ -386,9 +386,14 @@ for k, v in IgA.items():
             index_count += 1
   
 index = range(len([(k) for k in IgG.keys() if time_dict[k]['age_months'] < max_months]))
-df_IgG = pd.DataFrame(columns=['ID','age_months', 'age_days', 'IgG_PreF', \
-            'IgG_PostF', 'IgG_Ga','IgG_Gb', 'IgG_N'], index=index)
-
+df_IgG = pd.DataFrame(columns=['ID','age_months', 'age_days', 'consultdate', \
+                               'birthday' ,'IgG_PreF', \
+            'IgG_PostF', 'IgG_Ga','IgG_Gb', 'IgG_N', 'IgA_PreF', \
+            'IgA_PostF', 'IgA_Ga','IgA_Gb', 'IgA_N',\
+                'n_household','household04','household59','visitnursery_child',\
+                    'visitnursery_house','pregnancytime','contacttotal','contact04',\
+                        'contact59','sex'], index=index)
+#n_household,household04,household59,visitnursery_child,visitnursery_house,pregnancytime,contacttotal,contact04,contact59,sex
 index_count = 0
 for k, v in IgG.items():
     if time_dict[k]['age_months'] < max_months:
@@ -396,13 +401,55 @@ for k, v in IgG.items():
         df_IgG.loc[index_count].ID = k
         df_IgG.loc[index_count].age_months = time_dict[k]['age_months']
         df_IgG.loc[index_count].age_days = time_dict[k]['age_days']
+        df_IgG.loc[index_count].consultdate = time_dict[k]['consultdate']
+        df_IgG.loc[index_count].birthday = time_dict[k]['birthday']
+        
+        if 'n_household' in additional_variables[k].keys():
+            df_IgG.loc[index_count].n_household = additional_variables[k]['n_household']
+        if 'household04' in additional_variables[k].keys():
+            df_IgG.loc[index_count].household04 = additional_variables[k]['household04']
+        if 'household59' in additional_variables[k].keys():
+            df_IgG.loc[index_count].household59 = additional_variables[k]['household59']
+        if 'visitnursery_child' in additional_variables[k].keys():
+            df_IgG.loc[index_count].visitnursery_child = additional_variables[k]['visitnursery_child']
+        if 'visitnursery_house' in additional_variables[k].keys():
+            df_IgG.loc[index_count].visitnursery_house = additional_variables[k]['visitnursery_house']
+        if 'pregnancytime' in additional_variables[k].keys():
+            df_IgG.loc[index_count].pregnancytime = additional_variables[k]['pregnancytime']
+        if 'contacttotal' in additional_variables[k].keys():
+            df_IgG.loc[index_count].contacttotal = additional_variables[k]['contacttotal']
+        if 'contact04' in additional_variables[k].keys():
+            df_IgG.loc[index_count].contact04 = additional_variables[k]['contact04']
+        if 'contact59' in additional_variables[k].keys():
+            df_IgG.loc[index_count].contact59 = additional_variables[k]['contact59']
+        df_IgG.loc[index_count].sex = additional_variables[k]['sex']
+        
         df_IgG.loc[index_count].IgG_PreF = IgG[k]['PreF']
         df_IgG.loc[index_count].IgG_PostF = IgG[k]['PostF']
         df_IgG.loc[index_count].IgG_Ga = IgG[k]['Ga']
         df_IgG.loc[index_count].IgG_Gb = IgG[k]['Gb']
         df_IgG.loc[index_count].IgG_N = IgG[k]['N']
-        index_count += 1
+        if k in IgA.keys():
+            df_IgG.loc[index_count].IgA_PreF = IgA[k]['PreF']
+            df_IgG.loc[index_count].IgA_PostF = IgA[k]['PostF']
+            df_IgG.loc[index_count].IgA_Ga = IgA[k]['Ga']
+            df_IgG.loc[index_count].IgA_Gb = IgA[k]['Gb']
+            df_IgG.loc[index_count].IgA_N = IgA[k]['N']
         
+        index_count += 1
+  
+
+# data for reproducibility 1091 children under 5y to csv
+header = ['age_days', 'birthday', 'consultdate', \
+          'IgG_PreF', 'IgA_PreF', 'IgG_PostF', 'IgA_PostF', \
+       'IgG_Ga', 'IgA_Ga', 'IgG_Gb', 'IgA_Gb', 'IgG_N', 'IgA_N' \
+        'n_household', 'household04','household59'\
+            ,'visitnursery_child',\
+        'visitnursery_house','pregnancytime', 'contacttotal', 'contact04', \
+            'contact59', 'sex']
+df_IgG.to_csv('/home/andewegs/RSV_serology/data/participants_under5_csv.txt'\
+                    , columns=header,index=False)
+      
 # %% Figure scatter plot antibody concentration IgG (y) vs age (days) (x), colored by IgA
 # Figure did not end up in the manuscript
 plt.figure(dpi=300, figsize=(20,10))
@@ -845,7 +892,7 @@ header = ['age_days', 'birthday', 'consultdate', 'infection',\
             ,'visitnursery_child',\
         'visitnursery_house','pregnancytime', 'contacttotal', 'contact04', \
             'contact59', 'sex']
-df_infection.to_csv('/home/andewegs/RSV_serology/data/rsv_serology_csv.txt'\
+df_infection.to_csv('/home/andewegs/RSV_serology/data/infection_status_csv.txt'\
                     , columns=header,index=False)
 
 # %% Figure barplot fraction infected over age in months
