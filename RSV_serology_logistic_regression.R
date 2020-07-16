@@ -63,13 +63,6 @@ rsv.data <- rsv.data %>%
       visitnursery_child == 0 ~ 'False',
       visitnursery_child == 1 ~ 'True'
     ) ) %>% 
-#   mutate(
-     # Set variable for Pienter2 or Pienter3
- #     PIENTER = case_when(
-  #      startsWith(ID, "P2") ~ "P2",
-   #     startsWith(ID, "P3") ~ "P3"
-  #    )
- # ) %>%
   # Set variable for the different seasons.
   mutate(seasons = case_when(
     consultdate < paste("2006-", season_border, sep = "")  ~ "2005/2006", 
@@ -80,8 +73,6 @@ rsv.data <- rsv.data %>%
 rsv.data$Siblings04 <- factor(rsv.data$Siblings04)
 rsv.data$Siblings59 <- factor(rsv.data$Siblings59)
 rsv.data$Nursery <- factor(rsv.data$Nursery)
-rsv.data$visitnursery_house <- factor(rsv.data$visitnursery_house)
-rsv.data$seasons <- factor(rsv.data$seasons)
 
 # Only keep data with the variables of intrest n = 616
 completeVec <- complete.cases(rsv.data[, c("Siblings04", "Nursery")])
@@ -94,7 +85,6 @@ rsv.data <- rsv.data[completeVec,]
 # Model 1 with age and birth doy
 model1 <- gam(
   formula = infection ~ 
-    breastfeeding +
     ti(age_days, bs = "ps", k = 25) + 
     ti(Birth_doy, bs = "cp", k = 11),# +
    #ti(age_days, Birth_doy, bs = c("ps", "cp")),
