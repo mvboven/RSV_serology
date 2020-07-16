@@ -29,7 +29,7 @@ color_2 = '#E69F00' #Orange
 #
 
 # Import data 
-rsv.data <- read_csv(file = "data/rsv_serology_csv.txt")#"data/Riskfactors2_csv.txt")
+rsv.data <- read_csv(file = "data/infection_status_csv.txt")#"data/Riskfactors2_csv.txt")
 season_border = "10-01" #MM-DD
 # Some modifications
 rsv.data <- rsv.data %>%
